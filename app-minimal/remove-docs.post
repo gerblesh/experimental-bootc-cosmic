@@ -1,0 +1,8 @@
+#!/bin/bash
+set -xeuo pipefail
+
+rm -rf \
+    /usr/share/doc \
+    usr/share/info \
+    usr/share/man \
+    ;
