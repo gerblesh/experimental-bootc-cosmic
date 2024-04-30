@@ -17,7 +17,13 @@ ostree --repo=${ostree_repo} init --mode=bare-user
 ostree --repo=${ostree_repo} prune --refs-only --depth=0
 
 commitid_path=${cachedir}/commitid.txt
-rpm-ostree compose commit --repo=${ostree_repo} --write-commitid-to=${commitid_path} --unified-core ${dn}/postprocess-manifest.yaml ${rootfs}
+
+if [[ "${KIND}" == "bootc" ]]; then
+    rpm-ostree compose commit --repo=${ostree_repo} --write-commitid-to=${commitid_path} --unified-core ${dn}/postprocess-manifest.yaml ${rootfs}
+else
+    rpm-ostree compose commit --repo=${ostree_repo} --write-commitid-to=${commitid_path} --unified-core ${dn}/postprocess-manifest-app.yaml ${rootfs}
+fi
+
 commitid=$(cat ${commitid_path})
 rpm-ostree compose container-encapsulate --repo=${ostree_repo} ${commitid} oci-archive:${output}
 rm ${commitid_path}

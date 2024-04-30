@@ -39,21 +39,27 @@ rm -vrf ${rootfs}/home ${rootfs}/root
 ln -s var/home ${rootfs}/home
 ln -s var/roothome ${rootfs}/root
 
-# See https://github.com/containers/bootc/issues/358
-# basically systemd-tmpfiles doesn't follow symlinks; ordinarily our
-# tmpfiles.d unit for `/var/roothome` is fine, but this actually doesn't
-# work if we want to use tmpfiles.d to write to `/root/.ssh` because
-# tmpfiles gives up on that before getting to `/var/roothome`.
-sed -i -e 's, /root, /var/roothome,' ${rootfs}/usr/lib/tmpfiles.d/provision.conf
-# Because /var/roothome is also defined in rpm-ostree-0-integration.conf
-# we need to delete /var/roothome
-sed -i -e '/^d- \/var\/roothome /d' ${rootfs}/usr/lib/tmpfiles.d/provision.conf
+if [[ "${KIND}" == "bootc" ]]; then
+    # See https://github.com/containers/bootc/issues/358
+    # basically systemd-tmpfiles doesn't follow symlinks; ordinarily our
+    # tmpfiles.d unit for `/var/roothome` is fine, but this actually doesn't
+    # work if we want to use tmpfiles.d to write to `/root/.ssh` because
+    # tmpfiles gives up on that before getting to `/var/roothome`.
+    sed -i -e 's, /root, /var/roothome,' ${rootfs}/usr/lib/tmpfiles.d/provision.conf
+    # Because /var/roothome is also defined in rpm-ostree-0-integration.conf
+    # we need to delete /var/roothome
+    sed -i -e '/^d- \/var\/roothome /d' ${rootfs}/usr/lib/tmpfiles.d/provision.conf
+fi
 
 echo "Adjusting shadow/gshadow"
 ${dn}/passwd-shadow-fixup ${rootfs}
 
 echo "Running rpm-ostree postprocessing"
-rpm-ostree compose postprocess ${rootfs} ${dn}/postprocess-manifest.yaml
+if [[ "${KIND}" == "bootc" ]]; then
+    rpm-ostree compose postprocess ${rootfs} ${dn}/postprocess-manifest.yaml
+else
+    rpm-ostree compose postprocess ${rootfs} ${dn}/postprocess-manifest-app.yaml
+fi
 
 # Note that after here, it's e.g. /usr/etc, not /etc
 

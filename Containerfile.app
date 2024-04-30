@@ -28,8 +28,8 @@ FROM quay.io/fedora/fedora:40 as builder
 RUN --mount=type=cache,target=/var/cache/dnf,z dnf -y --enablerepo=updates-testing install golang rpm-ostree selinux-policy-targeted jq dnf-utils rsync
 # Copy in the source
 COPY . /src
-ARG KIND=bootc
-ARG VARIANT=full
+ARG KIND=app
+ARG VARIANT=minimal
 RUN /src/build/check-environment
 
 # Phase: pre-install
@@ -64,7 +64,5 @@ FROM oci-archive:./out.ociarchive
 RUN --mount=type=bind,from=builder,src=.,target=/var/tmp --mount=type=bind,rw=true,src=.,dst=/buildcontext,bind-propagation=shared rm /buildcontext/out.ociarchive
 
 # And configure metadata
-LABEL containers.bootc=1
-LABEL redhat.id=fedora
 STOPSIGNAL SIGRTMIN+3
-CMD /sbin/init
+CMD /bin/bash
