@@ -23,6 +23,10 @@ jobs:
             ./Containerfile
           build-args: |
             VARIANT=cosmic
+          extra-args: |
+            --security-opt=label=disable
+            --cap-add=all
+            --no-cache
 
       - name: Lowercase Registry
         id: registry_case
