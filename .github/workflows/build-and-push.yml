@@ -4,29 +4,32 @@ on:
   push:
     branches:
       - main
+env:
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build Image
-        id: build_image
-        uses: redhat-actions/buildah-build@v2
-        with:
-          image: cosmic-bootc
-          tags: latest
-          containerfiles: |
-            ./Containerfile
-          build-args: |
-            VARIANT=cosmic
-          extra-args: |
-            --security-opt=label=disable
-            --cap-add=all
-            --no-cache
+      - name: Setup Podman
+        shell: bash
+        run: |
+          # from https://askubuntu.com/questions/1414446/whats-the-recommended-way-of-installing-podman-4-in-ubuntu-22-04
+          ubuntu_version='22.04'
+          key_url="https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/unstable/xUbuntu_${ubuntu_version}/Release.key"
+          sources_url="https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/unstable/xUbuntu_${ubuntu_version}"
+          echo "deb $sources_url/ /" | sudo tee /etc/apt/sources.list.d/devel-kubic-libcontainers-unstable.list
+          curl -fsSL $key_url | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/devel_kubic_libcontainers_unstable.gpg > /dev/null
+          sudo apt-get update
+          sudo apt-get install -y podman
+      - name: Build image
+        shell: bash
+        run: |
+          podman build --security-opt=label=disable --cap-add=all -t cosmic-bootc:40 --build-arg=VARIANT=cosmic .
 
       - name: Lowercase Registry
         id: registry_case
@@ -42,8 +45,8 @@ jobs:
           REGISTRY_USER: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ github.token }}
         with:
-          image: ${{ steps.build_image.outputs.image }}
-          tags: ${{ steps.build_image.outputs.tags }}
+          image: ${{ cosic-bootc }}
+          tags: ${{ 40 }}
           registry: ${{ steps.registry_case.outputs.lowercase }}
           username: ${{ env.REGISTRY_USER }}
           password: ${{ env.REGISTRY_PASSWORD }}
