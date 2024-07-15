@@ -46,6 +46,17 @@ mkdir -m 0755 -p ${sysimage_rpm}
 mkdir -m 0755 -p ${dest}/var/lib
 ln -sf ../../usr/lib/sysimage/rpm ${dest}/var/lib/rpm
 
+find ${src} -name '*.pre'| sort | while read post; do
+    echo "Executing postprocessing script: ${post}"
+    releasever=$(. /usr/lib/os-release && echo $VERSION_ID)
+    test -n "$releasever" || (echo "Failed to determine releasever"; exit 1)
+    dest="$dest" releasever="$releasever" $post
+    # tmpd=$(mktemp -d -p /var/tmp)
+    # bwrap --bind ${dest} / --proc /proc --tmpfs /tmp --tmpfs /run --bind ${tmpd} /var/tmp --dev-bind /dev /dev \
+    #     --ro-bind $post /tmp/script -- /tmp/script
+    # rm $tmpd -rf
+done
+
 # Install packages into root
 find ${src} -name '*.spec' | while read spec; do
     # We automatically set --releasever from the host's VERSION_ID os-release
