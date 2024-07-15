@@ -9,7 +9,7 @@ License:        ASL 2.0
 
 BuildRequires: NetworkManager
 BuildRequires: NetworkManager-bluetooth
-Buildrequires: wget
+BuildRequires: wget
 BuildRequires: NetworkManager-config-connectivity-fedora
 BuildRequires: NetworkManager-ppp
 BuildRequires: NetworkManager-wifi
@@ -23,7 +23,6 @@ BuildRequires: alsa-ucm
 BuildRequires: alsa-utils
 BuildRequires: amd-gpu-firmware
 BuildRequires: amd-ucode-firmware
-BuildRequires: ark
 BuildRequires: at-spi2-atk
 BuildRequires: at-spi2-core
 BuildRequires: atheros-firmware
@@ -38,7 +37,6 @@ BuildRequires: bash-completion
 BuildRequires: bc
 BuildRequires: bcache-tools
 BuildRequires: bind-utils
-BuildRequires: bluedevil
 BuildRequires: bluez-cups
 BuildRequires: brcmfmac-firmware
 BuildRequires: breeze-icon-theme
@@ -74,7 +72,6 @@ BuildRequires: default-fonts-other-serif
 BuildRequires: dhcp-client
 BuildRequires: dmraid
 BuildRequires: dnsmasq
-BuildRequires: dolphin
 BuildRequires: e2fsprogs
 BuildRequires: efibootmgr
 BuildRequires: ethtool
