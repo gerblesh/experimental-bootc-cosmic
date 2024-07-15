@@ -1,7 +1,7 @@
 # This metadata goes unused. We are just reusing the .spec file format as a way
 # to declare requirements basically. Note that everything here must be
 # BuildRequires as we use `dnf builddep` to install things.
-Name:           fedora-kinoite
+Name:           fedora-cosmic
 Version:        0
 Release:        0
 Summary:        Base image
