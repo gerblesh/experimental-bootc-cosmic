@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+
+rm -f /etc/systemd/system/display-manager.service
+ln -s /usr/lib/systemd/system/cosmic-greeter.service /etc/systemd/system/display-manager.service
